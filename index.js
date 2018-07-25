@@ -15,10 +15,14 @@ db.on('error', function(error) {
 });
 db.once('open', function() {
   console.log("Connected to DB. Listening for connections.");
-  getOfficialTeamsList(function() {
-    setInterval(getMatchData, 30000);
-    getMatchData();
-  });
+  if (!config.toa_disable) {
+    getOfficialTeamsList(function() {
+      if (!config.toa_match_disable) {
+        setInterval(getMatchData, 30000);
+      }
+      getMatchData();
+    });
+  }
   server.listen(4200, "0.0.0.0");
 });
 
