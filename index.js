@@ -19,8 +19,8 @@ db.once('open', function() {
     getOfficialTeamsList(function() {
       if (!config.toa_match_disable) {
         setInterval(getMatchData, 30000);
+        getMatchData();
       }
-      getMatchData();
     });
   }
   server.listen(4200, "0.0.0.0");
