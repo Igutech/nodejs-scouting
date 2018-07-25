@@ -29,7 +29,7 @@
     </nav>
 
     <div class="tabcontent addteam">
-      <form class="col s12" action="#">
+      <form class="col s12" onsubmit="sendAddTeam(); return false;">
         <div class="row">
           <div class="input-field col s6">
             <input id="team_name" type="text" class="validate">
@@ -98,7 +98,7 @@
           </div>
         </div>
 
-        <button class="btn btn-large waves-effect waves-light" style="width: 100%;" onclick="sendAddTeam();">Submit
+        <button class="btn btn-large waves-effect waves-light" style="width: 100%;">Submit
           <i class="material-icons right">send</i>
         </button>
 
@@ -106,7 +106,7 @@
     </div>
 
     <div class="tabcontent addmatch">
-      <form class="col s12" action="#">
+      <form class="col s12" onsubmit="sendAddMatch(); return false;">
         <div class="row">
           <div class="input-field col s6">
             <input id="match_number" type="number" class="validate">
@@ -192,7 +192,7 @@
           </div>
         </div>
 
-        <button class="btn btn-large waves-effect waves-light" style="width: 100%;" onclick="sendAddMatch();">Submit
+        <button class="btn btn-large waves-effect waves-light" style="width: 100%;">Submit
           <i class="material-icons right">send</i>
         </button>
 
