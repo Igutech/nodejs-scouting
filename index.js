@@ -107,6 +107,7 @@ function addMatch(matchData, socket) {
     } else {
       socket.emit("addmatch", "success");
       sendNewMatchNotification(matchData, socket);
+      doProcessMatchResults();
     }
   });
 }
