@@ -51,6 +51,54 @@ socket.on("addteam", function(msg) {
   }
 });
 
+function sendAddMatch() {
+  $("input").attr("disabled", "disabled");
+  var data = {
+    number: Number($("#match_number").val()),
+    field:  Number($("#match_field").val()),
+    scores: {
+      blue: {
+        score: Number($("#match_blue_score").val()),
+        penalty: Number($("#match_blue_penalty").val()),
+        auto: Number($("#match_blue_auto").val()),
+        tele: Number($("#match_blue_tele").val()),
+        end: Number($("#match_blue_end").val())
+      },
+      red: {
+        score: Number($("#match_red_score").val()),
+        penalty: Number($("#match_red_penalty").val()),
+        auto: Number($("#match_red_auto").val()),
+        tele: Number($("#match_red_tele").val()),
+        end: Number($("#match_red_end").val())
+      }
+    },
+    teams: {
+      red: [Number($("#match_red_1").val()), Number($("#match_red_2").val())],
+      blue: [Number($("#match_blue_1").val()), Number($("#match_blue_2").val())]
+    }
+  };
+
+  socket.emit("addmatch", data);
+}
+
+socket.on("addmatch", function(msg) {
+  if (msg === "success") {
+    Materialize.toast("Successfully added match!");
+
+    $("input").removeAttr("disabled");
+    $("input").removeClass("valid");
+    $("input").removeClass("invalid");
+    $("input").val("");
+    $("input[type='checkbox']").each(function(e) {
+      $(this)[0].checked = false;
+    });
+    Materialize.updateTextFields();
+  } else {
+    Materialize.toast("Error adding match!");
+    $("input").removeAttr("disabled");
+  }
+});
+
 socket.on("teamlist", function(_teamList) {
   teamList = _teamList;
 });
@@ -58,4 +106,13 @@ socket.on("teamlist", function(_teamList) {
 socket.on("newteam", function(teamData) {
   teamList.add(teamData);
   Materialize.toast("New team added!");
+});
+
+socket.on("matchlist", function(_matchList) {
+  matchList = _matchList;
+});
+
+socket.on("newmatch", function(matchData) {
+  matchList.add(matchData);
+  Materialize.toast("New match added!");
 });

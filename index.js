@@ -47,13 +47,69 @@ io.on('connection', function(socket) {
     socket.emit("teamlist", newTeams);
   });
 
+  Match.find({}, function(err, matches) {
+    var newMatches = [];
+    for (var i = 0; i < matches.length; i++) {
+      newMatches[i] = {
+        number: matches[i].number,
+        field: matches[i].field,
+        scores: matches[i].scores,
+        teams: matches[i].teams
+      };
+    }
+
+    socket.emit("matchlist", newMatches);
+  });
+
   socket.on("addteam", function(data) {
     console.log("New team: " + data.number);
     addTeam(data, socket);
   });
 
+  socket.on("addmatch", function(data) {
+    console.log("New match: " + data.number);
+    addMatch(data, socket);
+  });
+
 
 });
+
+function addMatch(matchData, socket) {
+  var newMatch = new Match({
+    number: matchData.number,
+    field:  matchData.field,
+    scores: {
+      blue: {
+        score: matchData.scores.blue.score,
+        penalty: matchData.scores.blue.penalty,
+        auto: matchData.scores.blue.auto,
+        tele: matchData.scores.blue.tele,
+        end: matchData.scores.blue.end
+      },
+      red: {
+        score: matchData.scores.red.score,
+        penalty: matchData.scores.red.penalty,
+        auto: matchData.scores.red.auto,
+        tele: matchData.scores.red.tele,
+        end: matchData.scores.red.end
+      }
+    },
+    teams: {
+      red: [matchData.teams.red[0], matchData.teams.red[1]],
+      blue: [matchData.teams.blue[0], matchData.teams.blue[1]]
+    }
+  });
+
+  newMatch.save(function(saveErr, newMatch) {
+    if (saveErr) {
+      socket.emit("addmatch", "error");
+      console.log("Error submitting match: " + saveErr);
+    } else {
+      socket.emit("addmatch", "success");
+      sendNewMatchNotification(matchData, socket);
+    }
+  });
+}
 
 function addTeam(teamData, socket) {
   var teamDataCopy = JSON.parse(JSON.stringify(teamData));
@@ -464,6 +520,20 @@ function doProcessMatchResults() {
 
       console.log("Finished calculating OPR ratings for all teams.");
 
+      Match.find({}, function(err, matches) {
+        var newMatches = [];
+        for (var i = 0; i < matches.length; i++) {
+          newMatches[i] = {
+            number: matches[i].number,
+            field: matches[i].field,
+            scores: matches[i].scores,
+            teams: matches[i].teams
+          };
+        }
+
+        io.emit("matchlist", newMatches);
+      });
+
     });
 
   });
@@ -481,6 +551,10 @@ function copyMatrix(dstMat, starti, startj, srcmat) {
     }
     srci++;
   }
+}
+
+function sendNewMatchNotification(matchData, socket) {
+  socket.broadcast.emit('newmatch', matchData);
 }
 
 function sendNewTeamNotification(teamData, socket) {
