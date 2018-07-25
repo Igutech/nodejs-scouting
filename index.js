@@ -51,7 +51,7 @@ io.on('connection', function(socket) {
     socket.emit("teamlist", newTeams);
   });
 
-  Match.find({}, function(err, matches) {
+  Match.find({}).sort({number: 1}).exec(function(err, matches) {
     var newMatches = [];
     for (var i = 0; i < matches.length; i++) {
       newMatches[i] = {
@@ -525,7 +525,7 @@ function doProcessMatchResults() {
 
       console.log("Finished calculating OPR ratings for all teams.");
 
-      Match.find({}, function(err, matches) {
+      Match.find({}).sort({number: 1}).exec(function(err, matches) {
         var newMatches = [];
         for (var i = 0; i < matches.length; i++) {
           newMatches[i] = {

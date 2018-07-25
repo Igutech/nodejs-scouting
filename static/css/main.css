@@ -7718,3 +7718,15 @@ input[type=number]::-webkit-outer-spin-button {
 button {
   background-color: #43A047 !important;
 }
+.red-win {
+  background-color: rgba(222, 165, 165, 0.5);
+}
+.blue-win {
+  background-color: rgba(95, 145, 227, 0.5);
+}
+.tie {
+  background-color: rgba(242, 242, 242, 0.5);
+}
+tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}

@@ -9,7 +9,7 @@
 
     <nav class="green darken-1">
       <div class="nav-wrapper">
-        <a href="#" class="brand-logo" style="padding-left: 15px">FTC Scouting</a>
+        <a href="#" class="brand-logo" style="padding-left: 15px">Scouting</a>
         <a href="#" data-activates="mobile" class="button-collapse"><i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li><a href="#" onclick="openTab(event, 'addteam');">Add Team</a></li>
@@ -197,6 +197,20 @@
         </button>
 
       </form>
+    </div>
+
+    <div class="tabcontent viewmatch">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Red Teams</th>
+            <th>Blue Teams</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="match_list"></tbody>
+      </table>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
