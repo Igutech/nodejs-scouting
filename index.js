@@ -18,7 +18,13 @@ db.once('open', function() {
   if (!config.toa_disable) {
     getOfficialTeamsList(function() {
       if (!config.toa_match_disable) {
-        setInterval(getMatchData, 30000);
+        var period = config.match_fetch_period;
+        if (config.match_fetch_period < 30000) {
+          console.log("Match fetch period must be at least 30000 ms to avoid TOA rate limits.");
+          console.log("Using 30000 ms as period.");
+          period = 30000;
+        }
+        setInterval(getMatchData, period);
         getMatchData();
       }
     });
