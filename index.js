@@ -133,15 +133,35 @@ function addTeam(teamData, socket) {
     opr: 1
   });
 
-  newTeam.save(function(saveErr, newTeam) {
-    if (saveErr) {
-      socket.emit("addteam", "error");
-      console.log("Error submitting team: " + saveErr);
+  Team.find({number: teamData.number}, function(err, teams) {
+    if (err || teams.length == 0) {
+      newTeam.save(function(saveErr, newTeam) {
+        if (saveErr) {
+          socket.emit("addteam", "error");
+          console.log("Error submitting team: " + saveErr);
+        } else {
+          socket.emit("addteam", "success");
+          sendNewTeamNotification(teamData, socket);
+        }
+      });
     } else {
-      socket.emit("addteam", "success");
-      sendNewTeamNotification(teamData, socket);
+      teams[0].set({
+        name: teamData.name,
+        data: teamDataCopy,
+        opr: 1
+      });
+      teams[0].save(function(err, updatedTeam) {
+        if (err) {
+          socket.emit("addteam", "error");
+          console.log("Error submitting team: " + err);
+        } else {
+          socket.emit("addteam", "success");
+          sendNewTeamNotification(teamData, socket);
+        }
+      });
     }
   });
+
 }
 
 function getOfficialTeamsList(callback) {
