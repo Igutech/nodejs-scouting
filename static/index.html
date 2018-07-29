@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css"/>
+    <link rel="stylesheet" href="css/fa.min.css"/>
   </head>
   <body>
 
@@ -12,6 +13,7 @@
         <a href="#" class="brand-logo" style="padding-left: 15px">Scouting</a>
         <a href="#" data-activates="mobile" class="button-collapse"><i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="#"><i id="circle" class='fas fa-circle offline' style="font-size: 10px;"></i> <span id="onlineoffline">Offline</span></a></li>
           <li><a href="#" onclick="openTab(event, 'addteam');">Add Team</a></li>
           <li><a href="#" onclick="openTab(event, 'addmatch');">Add match</a></li>
           <li><a href="#" onclick="openTab(event, 'viewteams');">View Teams</a></li>
@@ -24,6 +26,7 @@
           <li><a href="#" onclick="openTab(event, 'viewteams');">View Teams</a></li>
           <li><a href="#" onclick="openTab(event, 'viewmatch');">View Matches</a></li>
           <li><a href="#" onclick="openTab(event, 'predictmatch');">Predict Match</a></li>
+          <li><a href="#"><i id="mobilecircle" class='fas fa-circle offline' style="font-size: 10px;"></i> <span id="mobileonlineoffline">Offline</span></a></li>
         </ul>
       </div>
     </nav>

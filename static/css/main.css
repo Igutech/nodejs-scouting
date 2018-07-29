@@ -7727,6 +7727,12 @@ button {
 .tie {
   background-color: rgba(242, 242, 242, 0.5);
 }
+.online {
+  color: #01DE01 !important;
+}
+.offline {
+  color: #FF5757 !important;
+}
 tr {
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }

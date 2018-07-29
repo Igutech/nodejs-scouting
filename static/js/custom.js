@@ -5,12 +5,38 @@ $(document).ready(function() {
 
 var socket = io();
 
+socket.on('connect', function() {
+  updateStatus(true);
+});
+
+socket.on('disconnect', function() {
+  updateStatus(false);
+});
+
 var teamList = [];
 var matchList = [];
 
 function openTab(event, tabname) {
   $(".tabcontent").hide();
   $("." + tabname).show();
+}
+
+function updateStatus(online) {
+  if (online) {
+    $("#circle").addClass("online");
+    $("#circle").removeClass("offline");
+    $("#onlineoffline").html("Online");
+    $("#mobilecircle").addClass("online");
+    $("#mobilecircle").removeClass("offline");
+    $("#mobileonlineoffline").html("Online");
+  } else {
+    $("#circle").addClass("offline");
+    $("#circle").removeClass("online");
+    $("#onlineoffline").html("Offline");
+    $("#mobilecircle").addClass("offline");
+    $("#mobilecircle").removeClass("online");
+    $("#mobileonlineoffline").html("Offline");
+  }
 }
 
 function sendAddTeam() {
