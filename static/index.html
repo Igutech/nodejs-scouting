@@ -202,6 +202,19 @@
       </form>
     </div>
 
+    <div class="tabcontent viewteams">
+      <table class="highlight">
+        <thead>
+          <tr>
+            <th>Number</th>
+            <th>Name</th>
+            <th>OPR</th>
+          </tr>
+        </thead>
+        <tbody id="teamsTable"></tbody>
+      </table>
+    </div>
+
     <div class="tabcontent viewmatch">
       <table>
         <thead>
@@ -214,6 +227,24 @@
         </thead>
         <tbody id="match_list"></tbody>
       </table>
+    </div>
+
+    <div id="teamModal" class="modal modal-fixed-footer">
+      <div class="modal-content">
+        <h4>Team <span id="teamModalNumber">Loading...</span></h4>
+        <h5><span id="teamModalName">Loading...</span></h5>
+
+        <strong>OPR:</strong>
+        <ul class="browser-default" style="margin-top: 5px;">
+          <li>Overall: <span id="oprOverall">N/A</span></li>
+          <li>Autonomous: <span id="oprAuto">N/A</span></li>
+          <li>Teleop: <span id="oprTele">N/A</span></li>
+          <li>Endgame: <span id="oprEnd">N/A</span></li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="modal-close waves-effect waves-green btn-flat">Close</a>
+      </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

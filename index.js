@@ -50,7 +50,8 @@ io.on('connection', function(socket) {
       newTeams[i] = {
         name: teams[i].name,
         number: teams[i].number,
-        data: teams[i].data
+        data: teams[i].data,
+        opr: teams[i].opr
       };
     }
 
@@ -565,6 +566,20 @@ function doProcessMatchResults() {
         io.emit("matchlist", newMatches);
       });
 
+      Team.find({}, function(err, teams) {
+        var newTeams = [];
+        for (var i = 0; i < teams.length; i++) {
+          newTeams[i] = {
+            name: teams[i].name,
+            number: teams[i].number,
+            data: teams[i].data,
+            opr: teams[i].opr
+          };
+        }
+
+        io.emit("teamlist", newTeams);
+      });
+
     });
 
   });
@@ -585,9 +600,9 @@ function copyMatrix(dstMat, starti, startj, srcmat) {
 }
 
 function sendNewMatchNotification(matchData, socket) {
-  socket.broadcast.emit('newmatch', matchData);
+  io.emit('newmatch', matchData);
 }
 
 function sendNewTeamNotification(teamData, socket) {
-  socket.broadcast.emit('newteam', teamData);
+  io.emit('newteam', teamData);
 }

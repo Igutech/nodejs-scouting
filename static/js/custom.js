@@ -1,5 +1,6 @@
 $(document).ready(function() {
   $(".button-collapse").sideNav({closeOnClick: true});
+  $(".modal").modal();
   openTab(null, 'addteam');
 });
 
@@ -128,11 +129,13 @@ socket.on("addmatch", function(msg) {
 
 socket.on("teamlist", function(_teamList) {
   teamList = _teamList;
+  renderTeams();
 });
 
 socket.on("newteam", function(teamData) {
   teamList.add(teamData);
   Materialize.toast("New team added!");
+  renderTeams();
 });
 
 socket.on("matchlist", function(_matchList) {
@@ -145,9 +148,49 @@ socket.on("matchlist", function(_matchList) {
 
 socket.on("newmatch", function(matchData) {
   matchList.add(matchData);
-  $("match_list").append(getMatchTableRow(matchData));
+  $("#match_list").append(getMatchTableRow(matchData));
   Materialize.toast("New match added!");
 });
+
+function renderTeams() {
+  $("#teamsTable").empty();
+  teamList.forEach(function(team) {
+    $("#teamsTable").append(getTeamTableRow(team));
+  });
+}
+
+function teamModal(teamNumber) {
+  console.log(teamNumber);
+  $("#teamModal").modal("open");
+  $("#teamModalNumber").text(teamNumber);
+
+  teamList.forEach(function(team) {
+    if (team.number === teamNumber) {
+      $("#teamModalName").text("Name: " + (team.name === "" ? "Unknown" : team.name));
+      if (isNaN(team.opr)) {
+        $("#oprOverall").text(team.opr.overall.toFixed(2));
+        $("#oprAuto").text(team.opr.auto.toFixed(2));
+        $("#oprTele").text(team.opr.tele.toFixed(2));
+        $("#oprEnd").text(team.opr.end.toFixed(2));
+      }
+    }
+  });
+}
+
+function getTeamTableRow(team) {
+  var row = "<tr onClick=\"teamModal(" + team.number + ");\"><td>";
+  row += team.number;
+  row += "</td><td>";
+  row += team.name === "" ? "?" : team.name;
+  row += "</td><td>";
+  var oprText = "N/A";
+  if (isNaN(team.opr)) {
+    oprText = team.opr.overall.toFixed(2);
+  }
+  row += oprText;
+  row += "</td></tr>";
+  return row;
+}
 
 function getMatchTableRow(matchData) {
   var winTag = "tie";
