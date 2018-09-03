@@ -6,6 +6,7 @@ var mongoose = require('mongoose');
 var request = require('request');
 var math = require('mathjs');
 let config = require("./config.json");
+var discord;
 
 mongoose.connect('mongodb://localhost:27017/Scouting');
 var db = mongoose.connection;
@@ -30,6 +31,9 @@ db.once('open', function() {
     });
   }
   server.listen(4200, "0.0.0.0");
+  if (config.discord_enable) {
+    discord = require("./discord");
+  }
 });
 
 var Team = require("./schemas/team.js");
@@ -601,6 +605,14 @@ function copyMatrix(dstMat, starti, startj, srcmat) {
 
 function sendNewMatchNotification(matchData, socket) {
   io.emit('newmatch', matchData);
+  var winner = "Tie";
+  if (matchData.scores.red.total > matchData.scores.blue.total)
+    winner = "Red";
+  if (matchData.scores.red.total < matchData.scores.blue.total)
+    winner = "Blue";
+  discord.newMatch(matchData.number, matchData.field, matchData.scores, winner,
+                    matchData.teams.red[0], matchData.teams.red[1],
+                    matchData.teams.blue[0], matchData.teams.blue[1]);
 }
 
 function sendNewTeamNotification(teamData, socket) {

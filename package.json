@@ -9,6 +9,7 @@
   "author": "Kevin Raneri",
   "license": "MIT",
   "dependencies": {
+    "discord.js": "^11.4.2",
     "express.js": "^1.0.0",
     "http": "0.0.0",
     "jquery": "^3.3.1",
