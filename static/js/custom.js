@@ -45,17 +45,17 @@ function sendAddTeam() {
   var data = {
     name: $("#team_name").val(),
     number: Number($("#team_number").val()),
-    auto_jewel: $("#auto_jewel")[0].checked,
-    auto_glyphs_scored: Number($("#auto_glyphs_scored").val()),
-    auto_pictograph_bonus: $("#auto_pictograph_bonus")[0].checked,
-    auto_safe_zone: $("#auto_safe_zone")[0].checked,
-    tele_glyphs_scored: Number($("#tele_glyphs_scored").val()),
-    tele_cipher: $("#tele_cipher")[0].checked,
-    tele_relic_zone_1: Number($("#tele_relic_zone_1").val()),
-    tele_relic_zone_2: Number($("#tele_relic_zone_2").val()),
-    tele_relic_zone_3: Number($("#tele_relic_zone_3").val()),
-    tele_relic_upright: Number($("#tele_relic_upright").val()),
-    tele_balanced: $("#tele_balanced")[0].checked
+    auto_land: $("#auto_land")[0].checked,
+    auto_sample: $("#auto_sample")[0].checked,
+    auto_claim: $("#auto_claim")[0].checked,
+    auto_park: $("#auto_park")[0].checked,
+    tele_gold_center: Number($("#tele_gold_center").val()),
+    tele_silver_center: Number($("#tele_silver_center").val()),
+    tele_gold_depot: Number($("#tele_gold_depot").val()),
+    tele_silver_depot: Number($("#tele_silver_depot").val()),
+    end_latched: $("#end_latched")[0].checked,
+    end_parked_crater: $("#end_parked_crater")[0].checked,
+    end_parked_full: $("#end_parked_full")[0].checked
   };
 
   socket.emit("addteam", data);
