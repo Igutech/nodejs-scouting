@@ -1,12 +1,12 @@
 {
-  "toa_disable": false,
-  "toa_match_disable": false,
+  "toa_disable": true,
+  "toa_match_disable": true,
   "match_fetch_period": 30000,
   "event_key": "1718-CMP-DET2",
   "application_name": "IguScouting",
   "toa_key": "sD7QC1AQwGqswBdzE6aBxmOkekpBQ3w2m0tAjXWCFjI=",
   "mmse": 1,
-  "discord_enable": true,
+  "discord_enable": false,
   "discord_token": "",
   "discord_alert_channel": "486189930599677983"
-}
+} 

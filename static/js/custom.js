@@ -1,16 +1,16 @@
-$(document).ready(function() {
-  $(".button-collapse").sideNav({closeOnClick: true});
+$(document).ready(function () {
+  $(".button-collapse").sideNav({ closeOnClick: true });
   $(".modal").modal();
   openTab(null, 'addteam');
 });
 
 var socket = io();
 
-socket.on('connect', function() {
+socket.on('connect', function () {
   updateStatus(true);
 });
 
-socket.on('disconnect', function() {
+socket.on('disconnect', function () {
   updateStatus(false);
 });
 
@@ -45,23 +45,24 @@ function sendAddTeam() {
   var data = {
     name: $("#team_name").val(),
     number: Number($("#team_number").val()),
-    auto_land: $("#auto_land")[0].checked,
-    auto_sample: $("#auto_sample")[0].checked,
-    auto_claim: $("#auto_claim")[0].checked,
     auto_park: $("#auto_park")[0].checked,
-    tele_gold_center: Number($("#tele_gold_center").val()),
-    tele_silver_center: Number($("#tele_silver_center").val()),
-    tele_gold_depot: Number($("#tele_gold_depot").val()),
-    tele_silver_depot: Number($("#tele_silver_depot").val()),
-    end_latched: $("#end_latched")[0].checked,
-    end_parked_crater: $("#end_parked_crater")[0].checked,
-    end_parked_full: $("#end_parked_full")[0].checked
+    auto_foundation: $("#auto_foundation")[0].checked,
+    auto_PlacedSkystone: $("#auto_PlacedSkystone")[0].checked,
+    auto_DeliverSkystone: $("#auto_DeliverSkystone")[0].checked,
+    tele_DeliverStone: $("#tele_DeliverStone")[0].checked,
+    tele_PlaceStone: $("#tele_PlaceStone")[0].checked,
+    auto_Skystone: Number($("#auto_Skystone").val()),
+    tele_maxStones_Delivered: Number($("#tele_maxStones_Delivered").val()),
+    tele_maxStones_Placed: Number($("#tele_maxStones_Placed").val()),
+    tele_skyscraper: Number($("#tele_skyscraper").val()),
+    end_capstone: $("#end_capstone")[0].checked,
+    end_park: $("#end_park")[0].checked,
   };
 
   socket.emit("addteam", data);
 }
 
-socket.on("addteam", function(msg) {
+socket.on("addteam", function (msg) {
   if (msg === "success") {
     Materialize.toast("Successfully added team!");
 
@@ -69,7 +70,7 @@ socket.on("addteam", function(msg) {
     $("input").removeClass("valid");
     $("input").removeClass("invalid");
     $("input").val("");
-    $("input[type='checkbox']").each(function(e) {
+    $("input[type='checkbox']").each(function (e) {
       $(this)[0].checked = false;
     });
     Materialize.updateTextFields();
@@ -83,7 +84,7 @@ function sendAddMatch() {
   $("input").attr("disabled", "disabled");
   var data = {
     number: Number($("#match_number").val()),
-    field:  Number($("#match_field").val()),
+    field: Number($("#match_field").val()),
     scores: {
       blue: {
         score: Number($("#match_blue_score").val()),
@@ -109,7 +110,7 @@ function sendAddMatch() {
   socket.emit("addmatch", data);
 }
 
-socket.on("addmatch", function(msg) {
+socket.on("addmatch", function (msg) {
   if (msg === "success") {
     Materialize.toast("Successfully added match!");
 
@@ -117,7 +118,7 @@ socket.on("addmatch", function(msg) {
     $("input").removeClass("valid");
     $("input").removeClass("invalid");
     $("input").val("");
-    $("input[type='checkbox']").each(function(e) {
+    $("input[type='checkbox']").each(function (e) {
       $(this)[0].checked = false;
     });
     Materialize.updateTextFields();
@@ -127,26 +128,26 @@ socket.on("addmatch", function(msg) {
   }
 });
 
-socket.on("teamlist", function(_teamList) {
+socket.on("teamlist", function (_teamList) {
   teamList = _teamList;
   renderTeams();
 });
 
-socket.on("newteam", function(teamData) {
+socket.on("newteam", function (teamData) {
   teamList.add(teamData);
   Materialize.toast("New team added!");
   renderTeams();
 });
 
-socket.on("matchlist", function(_matchList) {
+socket.on("matchlist", function (_matchList) {
   matchList = _matchList;
   $("#match_list").empty();
-  matchList.forEach(function(match) {
+  matchList.forEach(function (match) {
     $("#match_list").append(getMatchTableRow(match));
   });
 });
 
-socket.on("newmatch", function(matchData) {
+socket.on("newmatch", function (matchData) {
   matchList.add(matchData);
   $("#match_list").append(getMatchTableRow(matchData));
   Materialize.toast("New match added!");
@@ -154,24 +155,76 @@ socket.on("newmatch", function(matchData) {
 
 function renderTeams() {
   $("#teamsTable").empty();
-  teamList.forEach(function(team) {
+  teamList.forEach(function (team) {
     $("#teamsTable").append(getTeamTableRow(team));
   });
 }
 
 function teamModal(teamNumber) {
   console.log(teamNumber);
+
   $("#teamModal").modal("open");
   $("#teamModalNumber").text(teamNumber);
 
-  teamList.forEach(function(team) {
+  teamList.forEach(function (team) {
     if (team.number === teamNumber) {
       $("#teamModalName").text("Name: " + (team.name === "" ? "Unknown" : team.name));
+
+      //View Team Auto Calculation
+      var skystoneScore = (10 * team.data.auto_Skystone);
+      var skystonePlacement = 0;
+      var foundationPoint = 0;
+      var parkingPoint = 0;
+      var autoOverall = 0;
+      if (team.data.auto_PlacedSkystone) { skystonePlacement = 4 * team.data.auto_Skystone; }
+      else if (team.data.auto_DeliverSkystone) { skystonePlacement = 2 * team.data.auto_Skystone; }
+
+      if (team.data.auto_foundation) { foundationPoint = 10; }
+      if (team.data.auto_park) { parkingPoint = 5; }
+      autoOverall = skystoneScore + skystonePlacement + foundationPoint + parkingPoint;
+      $("#autoOverall").text(autoOverall);
+      $("#autoSkystone").text(team.data.auto_Skystone);
+      $("#autoFoundation").text(team.data.auto_foundation);
+      $("#autoParking").text(team.data.auto_park);
+
+      //View Team TeleOp Calculation
+      // var MaxdeliverOnly = team.data.tele_maxStones_Delivered;
+      var SkyScraperScore = 2 * team.data.tele_skyscraper;
+      var MaxstackAsWell = 2 * team.data.tele_maxStones_Placed;
+      var DeliverScore = team.data.tele_maxStones_Delivered
+      var StackingScore = MaxstackAsWell + SkyScraperScore;
+      var TeleOverall = 0;
+      if (team.data.tele_DeliverStone) { TeleOverall = DeliverScore; }
+      else if (team.data.tele_maxStones_Placed) { TeleOverall = StackingScore + SkyScraperScore; }
+      //$("#teleOnlyDeliver").text(MaxdeliverOnly);
+      $("#teleDeliverAndStack").text(MaxstackAsWell);
+      $("#teleSkyscraper").text(SkyScraperScore);
+      $("#teleDeliver").text(DeliverScore);
+      $("#teleStack").text(StackingScore);
+
+      //View Team Endgame Calculation
+      var capStoneScore = 0;
+      var EndgameFoundation = 0;
+      var EndgameParking = 0;
+      if (team.data.end_capstone) { capStoneScore = team.data.tele_skyscraper + 5; }
+      if (team.data.EndgameFoundation) { EndgameFoundation = 15; }
+      if (team.data.EndgameParking) { EndgameParking = 5; }
+
+      var finalScore = autoOverall + TeleOverall + capStoneScore + EndgameFoundation + EndgameParking;
+
+      $("#endCapstone").text(team.data.end_capstone);
+      $("#endCapstoneScore").text(capStoneScore);
+      $("#finalScore").text(finalScore);
+
+
       if (isNaN(team.opr)) {
         $("#oprOverall").text(team.opr.overall.toFixed(2));
         $("#oprAuto").text(team.opr.auto.toFixed(2));
         $("#oprTele").text(team.opr.tele.toFixed(2));
         $("#oprEnd").text(team.opr.end.toFixed(2));
+
+
+
       }
     }
   });
