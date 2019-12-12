@@ -8,7 +8,7 @@ var math = require('mathjs');
 let config = require("./config.json");
 var discord;
 
-mongoose.connect('mongodb://localhost:27017/Scouting');
+mongoose.connect('mongodb://mongo:27017/Scouting');
 var db = mongoose.connection;
 db.on('error', function(error) {
   console.log("ERROR: Failed to connect to DB: " + error);
@@ -610,9 +610,9 @@ function sendNewMatchNotification(matchData, socket) {
     winner = "Red";
   if (matchData.scores.red.total < matchData.scores.blue.total)
     winner = "Blue";
-  discord.newMatch(matchData.number, matchData.field, matchData.scores, winner,
-                    matchData.teams.red[0], matchData.teams.red[1],
-                    matchData.teams.blue[0], matchData.teams.blue[1]);
+  //discord.newMatch(matchData.number, matchData.field, matchData.scores, winner,
+  //                  matchData.teams.red[0], matchData.teams.red[1],
+  //                  matchData.teams.blue[0], matchData.teams.blue[1]);
 }
 
 function sendNewTeamNotification(teamData, socket) {
