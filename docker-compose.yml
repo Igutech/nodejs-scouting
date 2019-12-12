@@ -8,6 +8,8 @@ services:
                         - "4200:4200"
                 links:
                         - mongo
+                restart: unless-stopped
+                depends_on: mongo
         mongo:
                 container_name: mongo
                 image: mongo
@@ -15,4 +17,5 @@ services:
                         - ./data:/data/db
                 ports:
                         - "27017:27017"
+                restart: unless-stopped
 
