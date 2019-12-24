@@ -104,9 +104,14 @@
           <label for="end_capstone">Place CapStone</label>
         </div>
         <div class="input-field col s4">
+          <input type="checkbox" class="filled-in" id="end_foundation" />
+          <label for="end_foundation">Move Foundation Endgame</label>
+        </div>
+        <div class="input-field col s4">
           <input type="checkbox" class="filled-in" id="end_park" />
           <label for="end_park">Park at Endgame</label>
         </div>
+       
       </div>
 
       <button class="btn btn-large waves-effect waves-light" style="width: 100%;">Submit
@@ -269,7 +274,10 @@
       <ul class="browser-default" style="margin-top: 5px;">
         <li>Can Cap: <span id="endCapstone">N/A</span></li>
         <li>Tallet SkyScraper With Capstone: <span id="endCapstoneScore">N/A</span></li>
+        <li>Can Move Foundation <span id="endFoundationScore">N/A</span></li>
+
       </ul>
+    
       <strong>Final Score:</strong>
       <ul class="browser-default" style="margin-top: 5px;">
         <li>Score: <span id="finalScore">N/A</span></li>

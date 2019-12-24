@@ -56,6 +56,7 @@ function sendAddTeam() {
     tele_maxStones_Placed: Number($("#tele_maxStones_Placed").val()),
     tele_skyscraper: Number($("#tele_skyscraper").val()),
     end_capstone: $("#end_capstone")[0].checked,
+    end_foundation: $("#end_foundation")[0].checked,
     end_park: $("#end_park")[0].checked,
   };
 
@@ -207,13 +208,14 @@ function teamModal(teamNumber) {
       var EndgameFoundation = 0;
       var EndgameParking = 0;
       if (team.data.end_capstone) { capStoneScore = team.data.tele_skyscraper + 5; }
-      if (team.data.EndgameFoundation) { EndgameFoundation = 15; }
-      if (team.data.EndgameParking) { EndgameParking = 5; }
+      if (team.data.end_foundation) { EndgameFoundation = 15; }
+      if (team.data.end_park) { EndgameParking = 5; }
 
       var finalScore = autoOverall + TeleOverall + capStoneScore + EndgameFoundation + EndgameParking;
 
       $("#endCapstone").text(team.data.end_capstone);
       $("#endCapstoneScore").text(capStoneScore);
+      $("#endFoundationScore").text(EndgameFoundation);
       $("#finalScore").text(finalScore);
 
 
