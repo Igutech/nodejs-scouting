@@ -177,16 +177,18 @@ function teamModal(teamNumber) {
       var foundationPoint = 0;
       var parkingPoint = 0;
       var autoOverall = 0;
-      if (team.data.auto_PlacedSkystone) { skystonePlacement = 4 * team.data.auto_Skystone; }
-      else if (team.data.auto_DeliverSkystone) { skystonePlacement = 2 * team.data.auto_Skystone; }
+      var skystoneDisplace = "N/A";
+      if (team.data.auto_PlacedSkystone) { skystonePlacement = 4 * team.data.auto_Skystone; skystoneDisplace = "Placing" }
+      else if (team.data.auto_DeliverSkystone) { skystonePlacement = 2 * team.data.auto_Skystone; skystoneDisplace = "Deliverying" }
 
       if (team.data.auto_foundation) { foundationPoint = 10; }
       if (team.data.auto_park) { parkingPoint = 5; }
       autoOverall = skystoneScore + skystonePlacement + foundationPoint + parkingPoint;
       $("#autoOverall").text(autoOverall);
-      $("#autoSkystone").text(team.data.auto_Skystone);
-      $("#autoFoundation").text(team.data.auto_foundation);
-      $("#autoParking").text(team.data.auto_park);
+      $("#autoSkystone").text(skystonePlacement + " (" + team.data.auto_Skystone + ")");
+      $("#autoSkystoneDisplacement").text(skystoneDisplace);
+      $("#autoFoundation").text(foundationPoint + " (" + team.data.auto_foundation + ")");
+      $("#autoParking").text(parkingPoint + " (" + team.data.auto_park + ")");
 
       //View Team TeleOp Calculation
       // var MaxdeliverOnly = team.data.tele_maxStones_Delivered;
@@ -198,10 +200,10 @@ function teamModal(teamNumber) {
       if (team.data.tele_DeliverStone) { TeleOverall = DeliverScore; }
       else if (team.data.tele_maxStones_Placed) { TeleOverall = StackingScore + SkyScraperScore; }
       //$("#teleOnlyDeliver").text(MaxdeliverOnly);
-      $("#teleDeliverAndStack").text(MaxstackAsWell);
-      $("#teleSkyscraper").text(SkyScraperScore);
-      $("#teleDeliver").text(DeliverScore);
-      $("#teleStack").text(StackingScore);
+      $("#teleDeliverAndStack").text(MaxstackAsWell + " (" + team.data.tele_maxStones_Placed + ")");
+      $("#teleSkyscraper").text(SkyScraperScore + " (" + team.data.tele_skyscraper + ")");
+      $("#teleDeliver").text(DeliverScore + " (" + team.data.tele_maxStones_Delivered + ")");
+      $("#teleStack").text(StackingScore + " (" + team.data.tele_maxStones_Placed + ")");
 
       //View Team Endgame Calculation
       var capStoneScore = 0;
@@ -215,8 +217,9 @@ function teamModal(teamNumber) {
 
       $("#endCapstone").text(team.data.end_capstone);
       $("#endCapstoneScore").text(capStoneScore);
-      $("#endFoundationScore").text(EndgameFoundation);
+      $("#endFoundationScore").text(EndgameFoundation + " (" + team.data.end_foundation + ")");
       $("#finalScore").text(finalScore);
+      var remember = document.getElementById("raw_data");
 
 
       if (isNaN(team.opr)) {
@@ -224,11 +227,9 @@ function teamModal(teamNumber) {
         $("#oprAuto").text(team.opr.auto.toFixed(2));
         $("#oprTele").text(team.opr.tele.toFixed(2));
         $("#oprEnd").text(team.opr.end.toFixed(2));
-
-
-
       }
     }
+
   });
 }
 

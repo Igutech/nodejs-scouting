@@ -9,15 +9,17 @@ let config = require("./config.json");
 var discord;
 
 mongoose.connect('mongodb://mongo:27017/Scouting');
+//mongoose.connect('mongodb://127.0.0.1:27017/Scouting');
+
 var db = mongoose.connection;
-db.on('error', function(error) {
+db.on('error', function (error) {
   console.log("ERROR: Failed to connect to DB: " + error);
   process.exit(-1);
 });
-db.once('open', function() {
+db.once('open', function () {
   console.log("Connected to DB. Listening for connections.");
   if (!config.toa_disable) {
-    getOfficialTeamsList(function() {
+    getOfficialTeamsList(function () {
       if (!config.toa_match_disable) {
         var period = config.match_fetch_period;
         if (config.match_fetch_period < 30000) {
@@ -43,12 +45,12 @@ var Match = require("./schemas/match.js");
 app.use(express.static(__dirname + '/node_modules'));
 app.use(express.static('static'));
 
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
   //New connection! Send initialiation data.
   console.log("New connection!");
   //TODO: Send init data
 
-  Team.find({}, function(err, teams) {
+  Team.find({}, function (err, teams) {
     var newTeams = [];
     for (var i = 0; i < teams.length; i++) {
       newTeams[i] = {
@@ -62,7 +64,7 @@ io.on('connection', function(socket) {
     socket.emit("teamlist", newTeams);
   });
 
-  Match.find({}).sort({number: 1}).exec(function(err, matches) {
+  Match.find({}).sort({ number: 1 }).exec(function (err, matches) {
     var newMatches = [];
     for (var i = 0; i < matches.length; i++) {
       newMatches[i] = {
@@ -76,12 +78,12 @@ io.on('connection', function(socket) {
     socket.emit("matchlist", newMatches);
   });
 
-  socket.on("addteam", function(data) {
+  socket.on("addteam", function (data) {
     console.log("New team: " + data.number);
     addTeam(data, socket);
   });
 
-  socket.on("addmatch", function(data) {
+  socket.on("addmatch", function (data) {
     console.log("New match: " + data.number);
     addMatch(data, socket);
   });
@@ -92,7 +94,7 @@ io.on('connection', function(socket) {
 function addMatch(matchData, socket) {
   var newMatch = new Match({
     number: matchData.number,
-    field:  matchData.field,
+    field: matchData.field,
     scores: {
       blue: {
         score: matchData.scores.blue.score,
@@ -115,7 +117,7 @@ function addMatch(matchData, socket) {
     }
   });
 
-  newMatch.save(function(saveErr, newMatch) {
+  newMatch.save(function (saveErr, newMatch) {
     if (saveErr) {
       socket.emit("addmatch", "error");
       console.log("Error submitting match: " + saveErr);
@@ -138,9 +140,9 @@ function addTeam(teamData, socket) {
     opr: 1
   });
 
-  Team.find({number: teamData.number}, function(err, teams) {
+  Team.find({ number: teamData.number }, function (err, teams) {
     if (err || teams.length == 0) {
-      newTeam.save(function(saveErr, newTeam) {
+      newTeam.save(function (saveErr, newTeam) {
         if (saveErr) {
           socket.emit("addteam", "error");
           console.log("Error submitting team: " + saveErr);
@@ -155,7 +157,7 @@ function addTeam(teamData, socket) {
         data: teamDataCopy,
         opr: 1
       });
-      teams[0].save(function(err, updatedTeam) {
+      teams[0].save(function (err, updatedTeam) {
         if (err) {
           socket.emit("addteam", "error");
           console.log("Error submitting team: " + err);
@@ -177,7 +179,7 @@ function getOfficialTeamsList(callback) {
       'X-Application-Origin': config.application_name,
       'X-TOA-Key': config.toa_key
     }
-  }, function(error, response, body) {
+  }, function (error, response, body) {
     if (!error && !JSON.parse(body).status) {
       var res = JSON.parse(body);
       console.log("Got teams data.");
@@ -190,7 +192,7 @@ function getOfficialTeamsList(callback) {
           opr: 1
         });
 
-        newTeam.save(function(saveErr, newTeam) {});
+        newTeam.save(function (saveErr, newTeam) { });
       }
       callback();
     }
@@ -205,7 +207,7 @@ function getMatchData() {
       'X-Application-Origin': config.application_name,
       'X-TOA-Key': config.toa_key
     }
-  }, function(error, response, body) {
+  }, function (error, response, body) {
     if (!error && !JSON.parse(body).status) {
       var res = JSON.parse(body);
       console.log("Got match data");
@@ -216,7 +218,7 @@ function getMatchData() {
           'X-Application-Origin': config.application_name,
           'X-TOA-Key': config.toa_key
         }
-      }, function(error2, response2, stationsbody) {
+      }, function (error2, response2, stationsbody) {
 
         if (!error && !JSON.parse(stationsbody).status) {
           var stationsres = JSON.parse(stationsbody);
@@ -260,7 +262,7 @@ function getMatchData() {
               teams: teams
             });
 
-            newMatch.save(function(err, newMatch) {});
+            newMatch.save(function (err, newMatch) { });
           }
 
           doProcessMatchResults();
@@ -289,8 +291,8 @@ function calculateOPROverall(teams, matches) {
   var Mr = math.zeros(matches.length, 1);
   var Mb = math.zeros(matches.length, 1);
 
-  var Ao = math.zeros(2*matches.length, teams.length);
-  var Mo = math.zeros(2*matches.length, 1);
+  var Ao = math.zeros(2 * matches.length, teams.length);
+  var Mo = math.zeros(2 * matches.length, 1);
 
   var match = 0;
   var totalScore = 0;
@@ -347,8 +349,8 @@ function calculateOPRAuto(teams, matches) {
   var Mr = math.zeros(matches.length, 1);
   var Mb = math.zeros(matches.length, 1);
 
-  var Ao = math.zeros(2*matches.length, teams.length);
-  var Mo = math.zeros(2*matches.length, 1);
+  var Ao = math.zeros(2 * matches.length, teams.length);
+  var Mo = math.zeros(2 * matches.length, 1);
 
   var match = 0;
   var totalScore = 0;
@@ -405,8 +407,8 @@ function calculateOPRTele(teams, matches) {
   var Mr = math.zeros(matches.length, 1);
   var Mb = math.zeros(matches.length, 1);
 
-  var Ao = math.zeros(2*matches.length, teams.length);
-  var Mo = math.zeros(2*matches.length, 1);
+  var Ao = math.zeros(2 * matches.length, teams.length);
+  var Mo = math.zeros(2 * matches.length, 1);
 
   var match = 0;
   var totalScore = 0;
@@ -463,8 +465,8 @@ function calculateOPREnd(teams, matches) {
   var Mr = math.zeros(matches.length, 1);
   var Mb = math.zeros(matches.length, 1);
 
-  var Ao = math.zeros(2*matches.length, teams.length);
-  var Mo = math.zeros(2*matches.length, 1);
+  var Ao = math.zeros(2 * matches.length, teams.length);
+  var Mo = math.zeros(2 * matches.length, 1);
 
   var match = 0;
   var totalScore = 0;
@@ -511,13 +513,13 @@ function calculateOPREnd(teams, matches) {
 }
 
 function doProcessMatchResults() {
-  Match.find({}).exec(function(err, matches) {
+  Match.find({}).exec(function (err, matches) {
     if (err) {
       console.log("Error processing matches for calculations:" + err);
       return;
     }
 
-    Team.find({}, function(err2, teams) {
+    Team.find({}, function (err2, teams) {
 
       if (err2) {
         console.log("Error processing matches for calculations:" + err);
@@ -529,10 +531,10 @@ function doProcessMatchResults() {
       var oprtele = [];
       var oprend = [];
       try {
-        opr =  calculateOPROverall(teams, matches);
+        opr = calculateOPROverall(teams, matches);
         oprauto = calculateOPRAuto(teams, matches);
         oprtele = calculateOPRTele(teams, matches);
-        oprend  = calculateOPREnd (teams, matches);
+        oprend = calculateOPREnd(teams, matches);
       } catch (e) {
         for (var i = 0; i < teams.length; i++) {
           opr[i] = 1;
@@ -545,18 +547,20 @@ function doProcessMatchResults() {
 
       for (var i = 0; i < teams.length; i++) {
         var teamNumber = teams[i].number;
-        Team.update({number: teamNumber}, {opr: {
-          overall: Number(parseFloat(opr[i])),
-          auto: Number(parseFloat(oprauto[i])),
-          tele: Number(parseFloat(oprtele[i])),
-          end:  Number(parseFloat(oprend[i]))
+        Team.update({ number: teamNumber }, {
+          opr: {
+            overall: Number(parseFloat(opr[i])),
+            auto: Number(parseFloat(oprauto[i])),
+            tele: Number(parseFloat(oprtele[i])),
+            end: Number(parseFloat(oprend[i]))
 
-        }}, function(err, team) {});
+          }
+        }, function (err, team) { });
       }
 
       console.log("Finished calculating OPR ratings for all teams.");
 
-      Match.find({}).sort({number: 1}).exec(function(err, matches) {
+      Match.find({}).sort({ number: 1 }).exec(function (err, matches) {
         var newMatches = [];
         for (var i = 0; i < matches.length; i++) {
           newMatches[i] = {
@@ -570,7 +574,7 @@ function doProcessMatchResults() {
         io.emit("matchlist", newMatches);
       });
 
-      Team.find({}, function(err, teams) {
+      Team.find({}, function (err, teams) {
         var newTeams = [];
         for (var i = 0; i < teams.length; i++) {
           newTeams[i] = {
