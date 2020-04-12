@@ -1,0 +1,93 @@
+<div class="addmatch">
+    <form class="col s12" role="form" action="/processMatch?form=addMatch" method="POST">
+        <div class="row">
+            <div class="input-field col s6">
+                <input name="match_number" id="match_number" type="number" class="validate">
+                <label for="match_number">Match Number</label>
+            </div>
+            <div class="input-field col s6">
+                <input name="match_field" id="match_field" type="number" class="validate">
+                <label for="match_field">Field</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s3">
+                <input name="match_red_1" type="number" id="match_red_1" class="validate" />
+                <label for="match_red_1">Red 1</label>
+            </div>
+            <div class="input-field col s3">
+                <input name="match_red_2" type="number" id="match_red_2" class="validate" />
+                <label for="match_red_2">Red 2</label>
+            </div>
+            <div class="input-field col s3">
+                <input name="match_blue_1" type="number" id="match_blue_1" class="validate" />
+                <label for="match_blue_1">Blue 1</label>
+            </div>
+            <div class="input-field col s3">
+                <input name="match_blue_2" type="number" id="match_blue_2" class="validate" />
+                <label for="match_blue_2">Blue 2</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s6">
+                <input name="match_red_score" type="number" id="match_red_score" class="validate" />
+                <label for="match_red_score">Red Total Score</label>
+            </div>
+            <div class="input-field col s6">
+                <input name="match_blue_score" type="number" id="match_blue_score" class="validate" />
+                <label for="match_blue_score">Blue Total Score</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s6">
+                <input name="match_red_penalty" type="number" id="match_red_penalty" class="validate" />
+                <label for="match_red_penalty">Red Penalties</label>
+            </div>
+            <div class="input-field col s6">
+                <input name="match_blue_penalty" type="number" id="match_blue_penalty" class="validate" />
+                <label for="match_blue_penalty">Blue Penalties</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s6">
+                <input name="match_red_auto" type="number" id="match_red_auto" class="validate" />
+                <label for="match_red_auto">Red Autonomous</label>
+            </div>
+            <div class="input-field col s6">
+                <input name="match_blue_auto" type="number" id="match_blue_auto" class="validate" />
+                <label for="match_blue_auto">Blue Autonomous</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s6">
+                <input name="match_red_tele" type="number" id="match_red_tele" class="validate" />
+                <label for="match_red_tele">Red Teleop</label>
+            </div>
+            <div class="input-field col s6">
+                <input name="match_blue_tele" type="number" id="match_blue_tele" class="validate" />
+                <label for="match_blue_tele">Blue Teleop</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s6">
+                <input name="match_red_end" type="number" id="match_red_end" class="validate" />
+                <label for="match_red_end">Red Endgame</label>
+            </div>
+            <div class="input-field col s6">
+                <input name="match_blue_end" type="number" id="match_blue_end" class="validate" />
+                <label for="match_blue_end">Blue Endgame</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-large waves-effect waves-light" style="width: 100%;">Submit
+            <i class="material-icons right">send</i>
+        </button>
+
+    </form>
+</div>

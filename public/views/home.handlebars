@@ -1,0 +1,86 @@
+<div>
+  <form class="col s12" role="form" action="/process?form=home" method="POST">
+    <div class="row">
+      <div class="input-field col s6">
+        <input name="team_number" id="team_number" type="number" class="form-control">
+        <label for="team_number">Team Number</label>
+      </div>
+      <div class="input-field col s6">
+        <input name="team_name" id="team_name" type="text" class="validate">
+        <label for="team_name">Team Name</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="input-field col s6">
+        <input name="auto_park" type="checkbox" class="filled-in" id="auto_park" />
+        <label for="auto_park">Park</label>
+      </div>
+      <div class="input-field col s6">
+        <input name="auto_foundation" type="checkbox" class="filled-in" id="auto_foundation" />
+        <label for="auto_foundation">Move Foundation</label>
+      </div>
+      <div class="input-field col s6">
+        <input name="auto_PlacedSkystone" type="checkbox" class="filled-in" id="auto_PlacedSkystone" />
+        <label for="auto_PlacedSkystone">Skystone Placed</label>
+      </div>
+      <div class="input-field col s6">
+        <input name="auto_DeliverSkystone" type="checkbox" class="filled-in" id="auto_DeliverSkystone" />
+        <label for="auto_DeliverSkystone">Skystone Delivered</label>
+      </div>
+      <div class="input-field col s6">
+        <input name="tele_DeliverStone" type="checkbox" class="filled-in" id="tele_DeliverStone" />
+        <label for="tele_DeliverStone">Deliver Stone</label>
+      </div>
+      <div class="input-field col s6">
+        <input name="tele_PlaceStone" type="checkbox" class="filled-in" id="tele_PlaceStone" />
+        <label for="tele_PlaceStone"> Place Stone</label>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+    <div class="row">
+      <div class="input-field col s6">
+        <input name="auto_Skystone" type="number" id="auto_Skystone" class="validate" />
+        <label for="auto_Skystone">Number Of Skystone in Auto</label>
+      </div>
+
+      <div class="input-field col s6">
+        <input name="tele_maxStones_Delivered" type="number" id="tele_maxStones_Delivered" class="validate" />
+        <label for="tele_maxStones_Delivered">Max Stones Delivered(ONLY DELIVER) In Teleop</label>
+      </div>
+      <div class="input-field col s6">
+        <input name="tele_maxStones_Placed" type="number" id="tele_maxStones_Placed" class="validate" />
+        <label for="tele_maxStones_Placed">Max Stones Placed(DELIVER AND PLACE) In Teleop</label>
+      </div>
+      <div class="input-field col s6">
+        <input name="tele_skyscraper" type="number" id="tele_skyscraper" class="validate" />
+        <label for="tele_skyscraper">Highest Possible Stack In Teleop</label>
+      </div>
+    </div>
+
+
+
+    <div class="row">
+      <div class="input-field col s4">
+        <input name="end_capstone" type="checkbox" class="filled-in" id="end_capstone" />
+        <label for="end_capstone">Place CapStone</label>
+      </div>
+      <div class="input-field col s4">
+        <input name="end_foundation" type="checkbox" class="filled-in" id="end_foundation" />
+        <label for="end_foundation">Move Foundation Endgame</label>
+      </div>
+      <div class="input-field col s4">
+        <input name="end_park" type="checkbox" class="filled-in" id="end_park" />
+        <label for="end_park">Park at Endgame</label>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-large waves-effect waves-light" style="width: 100%;">Submit
+      <i class="material-icons right">send</i>
+    </button>
+
+  </form>
+</div>
