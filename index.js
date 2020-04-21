@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 var formidable = require('formidable');
 var Team = require("./schemas/team.js");
 var Match = require("./schemas/match.js");
+var getList = require("./matchScraper.js")
 
 app.disable('x-powered-by');
 
@@ -31,8 +32,20 @@ db.on('error', function (error) {
 db.once('open', function () {
   console.log("Connected to DB. Listening for connections.");
 
-  server.listen(4200, "0.0.0.0");
+  server.listen(4200, "0.0.0.0")
 
+});
+
+io.on('connection', function (socket) {
+  //New connection! Send initialiation data.
+  console.log("New connection!");
+  //TODO: Send init data
+
+  socket.on("button", function (msg) {
+    if (msg == "matchScrape") {
+      scrapeMatches();
+    }
+  });
 });
 
 app.get('/', (req, res) => {
@@ -227,6 +240,122 @@ function addMatch(matchData, socket) {
       doProcessMatchResults();
     }
   });
+}
+
+function calculateOPROverall(teams, matches) {
+  var teamNumbers = [];
+  for (var i = 0; i < teams.length; i++) {
+    teamNumbers.push(teams[i].number);
+  }
+
+  var Ar = math.zeros(matches.length, teams.length);
+  var Ab = math.zeros(matches.length, teams.length);
+  var Mr = math.zeros(matches.length, 1);
+  var Mb = math.zeros(matches.length, 1);
+
+  var Ao = math.zeros(2 * matches.length, teams.length);
+  var Mo = math.zeros(2 * matches.length, 1);
+
+  var match = 0;
+  var totalScore = 0;
+  for (var i = 0; i < matches.length; i++) {
+
+    for (var j = 0; j < 2; j++) {
+      Ar.subset(math.index(match, teamNumbers.indexOf(parseInt(matches[i].teams.red[j]))), 1);
+      Ab.subset(math.index(match, teamNumbers.indexOf(parseInt(matches[i].teams.blue[j]))), 1);
+    }
+
+    Mr.subset(math.index(match, 0), matches[i].scores.red.score);
+    Mb.subset(math.index(match, 0), matches[i].scores.blue.score);
+
+    totalScore += matches[i].scores.red.score;
+    totalScore += matches[i].scores.blue.score;
+
+    match++;
+
+  }
+
+  copyMatrix(Ao, 0, 0, Ar);
+  copyMatrix(Ao, matches.length, 0, Ab);
+
+  var meanTeamOffense = totalScore / (matches.length * 2 * 2);
+  for (var i = 0; i < matches.length; i++) {
+    Mr.subset(math.index(i, 0), Mr.subset(math.index(i, 0)) - 2 * meanTeamOffense);
+    Mb.subset(math.index(i, 0), Mb.subset(math.index(i, 0)) - 2 * meanTeamOffense);
+  }
+
+  copyMatrix(Mo, 0, 0, Mr);
+  copyMatrix(Mo, matches.length, 0, Mb);
+
+  var matchMatrixInverse = math.inv(math.add(math.multiply(math.transpose(Ao), Ao), math.multiply(math.eye(teams.length), config.mmse)));
+
+  var opr = [];
+  var Oprm = math.multiply(matchMatrixInverse, math.multiply(math.transpose(Ao), Mo));
+  for (var i = 0; i < teams.length; i++) {
+    Oprm.subset(math.index(i, 0), Oprm.subset(math.index(i, 0)) + meanTeamOffense);
+    opr[i] = Oprm.subset(math.index(i, 0));
+  }
+
+  console.log("Finished calculating Overall OPR for " + teamNumbers.length + " teams.");
+  return opr;
+}
+
+function calculateOPRAuto(teams, matches) {
+  var teamNumbers = [];
+  for (var i = 0; i < teams.length; i++) {
+    teamNumbers.push(teams[i].number);
+  }
+
+  var Ar = math.zeros(matches.length, teams.length);
+  var Ab = math.zeros(matches.length, teams.length);
+  var Mr = math.zeros(matches.length, 1);
+  var Mb = math.zeros(matches.length, 1);
+
+  var Ao = math.zeros(2 * matches.length, teams.length);
+  var Mo = math.zeros(2 * matches.length, 1);
+
+  var match = 0;
+  var totalScore = 0;
+  for (var i = 0; i < matches.length; i++) {
+
+    for (var j = 0; j < 2; j++) {
+      Ar.subset(math.index(match, teamNumbers.indexOf(parseInt(matches[i].teams.red[j]))), 1);
+      Ab.subset(math.index(match, teamNumbers.indexOf(parseInt(matches[i].teams.blue[j]))), 1);
+    }
+
+    Mr.subset(math.index(match, 0), matches[i].scores.red.auto);
+    Mb.subset(math.index(match, 0), matches[i].scores.blue.auto);
+
+    totalScore += matches[i].scores.red.auto;
+    totalScore += matches[i].scores.blue.auto;
+
+    match++;
+
+  }
+
+  copyMatrix(Ao, 0, 0, Ar);
+  copyMatrix(Ao, matches.length, 0, Ab);
+
+  var meanTeamOffense = totalScore / (matches.length * 2 * 2);
+  for (var i = 0; i < matches.length; i++) {
+    Mr.subset(math.index(i, 0), Mr.subset(math.index(i, 0)) - 2 * meanTeamOffense);
+    Mb.subset(math.index(i, 0), Mb.subset(math.index(i, 0)) - 2 * meanTeamOffense);
+  }
+
+  copyMatrix(Mo, 0, 0, Mr);
+  copyMatrix(Mo, matches.length, 0, Mb);
+
+  var matchMatrixInverse = math.inv(math.add(math.multiply(math.transpose(Ao), Ao), math.multiply(math.eye(teams.length), config.mmse)));
+
+  var opr = [];
+  var Oprm = math.multiply(matchMatrixInverse, math.multiply(math.transpose(Ao), Mo));
+  for (var i = 0; i < teams.length; i++) {
+    Oprm.subset(math.index(i, 0), Oprm.subset(math.index(i, 0)) + meanTeamOffense);
+    opr[i] = Oprm.subset(math.index(i, 0));
+  }
+
+  console.log("Finished calculating Autonomous OPR for " + teamNumbers.length + " teams.");
+  return opr;
 }
 
 function calculateOPRTele(teams, matches) {
@@ -443,4 +572,36 @@ function copyMatrix(dstMat, starti, startj, srcmat) {
     }
     srci++;
   }
+}
+
+function scrapeMatches() {
+  getList().then((result => {
+    for (var i = 0; i < result.length; i++) {
+      let data = {
+        number: result[i].number,
+        field: result[i].field,
+        scores: {
+          blue: {
+            score: result[i].blue_score,
+            penalty: result[i].blue_penalty,
+            auto: result[i].blue_auto,
+            tele: result[i].blue_tele,
+            end: result[i].blue_end
+          },
+          red: {
+            score: result[i].red_score,
+            penalty: result[i].red_penalty,
+            auto: result[i].red_auto,
+            tele: result[i].red_tele,
+            end: result[i].red_end
+          }
+        },
+        teams: {
+          red: [result[i].redTeam_one, result[i].redTeam_two],
+          blue: [result[i].blueTeam_one, result[i].blueTeam_two]
+        }
+      }
+      addMatch(data)
+    }
+  })).catch(console.error)
 }

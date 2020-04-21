@@ -35,7 +35,11 @@ function updateStatus(online) {
     $("#mobileonlineoffline").html("Offline");
   }
 }
+$("#matchScrape").click(function () {
 
+  socket.emit("button", "matchScrape");
+
+});
 
 socket.on("teamlist", function (_teamList) {
   teamList = _teamList;
