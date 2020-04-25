@@ -4,7 +4,6 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var handlebars = require('express-handlebars');
 var mongoose = require('mongoose');
-var formidable = require('formidable');
 var Team = require("./schemas/team.js");
 var Match = require("./schemas/match.js");
 var getList = require("./matchScraper.js")
@@ -39,7 +38,6 @@ db.once('open', function () {
 io.on('connection', function (socket) {
   //New connection! Send initialiation data.
   console.log("New connection!");
-  //TODO: Send init data
 
   socket.on("button", function (msg) {
     if (msg == "matchScrape") {
@@ -57,8 +55,6 @@ app.get('/', (req, res) => {
 
 app.post('/process', function (req, res) {
 
-  // var name = req.body.team_name;
-  // var number = req.body.team_number;
   var data = {
     name: req.body.team_name,
     number: Number(req.body.team_number),
