@@ -7,7 +7,7 @@ var mongoose = require('mongoose');
 var Team = require("./schemas/team.js");
 var Match = require("./schemas/match.js");
 var getList = require("./matchScraper.js")
-
+var scripts = [{ script: '/js/home.js' }];
 app.disable('x-powered-by');
 
 app.set('view engine', 'handlebars');
@@ -48,9 +48,7 @@ io.on('connection', function (socket) {
 
 app.get('/', (req, res) => {
   //Serves the body of the page aka "main.handlebars" to the container //aka "index.handlebars"
-  res.render('home', {
-    layout: 'index',
-  });
+  res.render('home', {layout: 'index', scripts:scripts});
 });
 
 app.post('/process', function (req, res) {
@@ -152,9 +150,7 @@ app.get("/viewMatch", function (req, res) {
 
     });
   });
-  res.render('viewMatch', {
-    layout: 'index',
-  });
+  res.render('viewMatch', {layout: 'index'});
 });
 app.get("/predictMatch", function (req, res) {
   res.render('predictMatch', {
