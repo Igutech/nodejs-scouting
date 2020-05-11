@@ -7,7 +7,7 @@ var mongoose = require('mongoose');
 var Team = require("./schemas/team.js");
 var Match = require("./schemas/match.js");
 var getList = require("./matchScraper.js")
-var scripts = [{ script: '/js/home.js' }];
+
 app.disable('x-powered-by');
 
 app.set('view engine', 'handlebars');
@@ -38,79 +38,11 @@ db.once('open', function () {
 io.on('connection', function (socket) {
   //New connection! Send initialiation data.
   console.log("New connection!");
-
-  socket.on("button", function (msg) {
-    if (msg == "matchScrape") {
-      scrapeMatches();
-    }
+  socket.on("addteam", function (data) {
+    console.log("New team: " + data.number);
+    addTeam(data, socket);
   });
-});
 
-app.get('/', (req, res) => {
-  //Serves the body of the page aka "main.handlebars" to the container //aka "index.handlebars"
-  res.render('home', {layout: 'index', scripts:scripts});
-});
-
-app.post('/process', function (req, res) {
-
-  var data = {
-    name: req.body.team_name,
-    number: Number(req.body.team_number),
-    auto_park: Boolean(req.body.auto_park),
-    auto_foundation: Boolean(req.body.auto_foundation),
-    auto_PlacedSkystone: Boolean(req.body.auto_PlacedSkystone),
-    auto_DeliverSkystone: Boolean(req.body.auto_DeliverSkystone),
-    tele_DeliverStone: Boolean(req.body.tele_DeliverStone),
-    tele_PlaceStone: Boolean(req.body.tele_PlaceStone),
-    auto_Skystone: Number(req.body.auto_Skystone),
-    tele_maxStones_Delivered: Number(req.body.tele_maxStones_Delivered),
-    tele_maxStones_Placed: Number(req.body.tele_maxStones_Placed),
-    tele_skyscraper: Number(req.body.tele_skyscraper),
-    end_capstone: Boolean(req.body.end_capstone),
-    end_foundation: Boolean(req.body.end_foundation),
-    end_park: Boolean(req.body.end_park),
-  };
-  addTeam(data);
-  res.redirect(303, '/');
-});
-
-
-app.get("/addMatch", function (req, res) {
-  res.render('addMatch', {
-    layout: 'index',
-  });
-});
-
-app.post('/processMatch', function (req, res) {
-  var data = {
-    number: Number(req.body.match_number),
-    field: Number(req.body.match_field),
-    scores: {
-      blue: {
-        score: Number(req.body.match_blue_score),
-        penalty: Number(req.body.match_blue_penalty),
-        auto: Number(req.body.match_blue_auto),
-        tele: Number(req.body.match_blue_tele),
-        end: Number(req.body.match_blue_end)
-      },
-      red: {
-        score: Number(req.body.match_red_score),
-        penalty: Number(req.body.match_red_penalty),
-        auto: Number(req.body.match_red_auto),
-        tele: Number(req.body.match_red_tele),
-        end: Number(req.body.match_red_end)
-      }
-    },
-    teams: {
-      red: [Number(req.body.match_red_1), Number(req.body.match_red_2)],
-      blue: [(Number(req.body.match_blue_1)), Number(req.body.match_blue_2)]
-    }
-  };
-  addMatch(data);
-  res.redirect(303, '/addMatch')
-});
-
-app.get("/viewTeams", function (req, res) {
   Team.find({}, function (err, teams) {
     var newTeams = [];
     for (var i = 0; i < teams.length; i++) {
@@ -121,18 +53,11 @@ app.get("/viewTeams", function (req, res) {
         opr: teams[i].opr
       };
     }
-    io.on('connection', function (socket) {
-      socket.emit("teamlist", newTeams);
 
-    });
+    socket.emit("teamlist", newTeams);
+
   });
 
-  res.render('viewTeams', {
-    layout: 'index',
-  });
-});
-
-app.get("/viewMatch", function (req, res) {
   Match.find({}).sort({
     number: 1
   }).exec(function (err, matches) {
@@ -145,12 +70,47 @@ app.get("/viewMatch", function (req, res) {
         teams: matches[i].teams
       };
     }
-    io.on('connection', function (socket) {
-      socket.emit("matchlist", newMatches);
 
-    });
+    socket.emit("matchlist", newMatches);
   });
-  res.render('viewMatch', {layout: 'index'});
+
+  socket.on("button", function (msg) {
+    if (msg == "matchScrape") {
+      scrapeMatches();
+    }
+  });
+
+  socket.on("addmatch", function (data) {
+    console.log("New match: " + data.number);
+    addMatch(data, socket);
+  });
+});
+
+app.get('/', (req, res) => {
+  res.render('home', {
+    layout: 'index',
+  });
+});
+
+
+app.get("/addMatch", function (req, res) {
+  res.render('addMatch', {
+    layout: 'index',
+  });
+});
+
+app.get("/viewTeams", function (req, res) {
+
+  res.render('viewTeams', {
+    layout: 'index',
+  });
+});
+
+app.get("/viewMatch", function (req, res) {
+
+  res.render('viewMatch', {
+    layout: 'index'
+  });
 });
 app.get("/predictMatch", function (req, res) {
   res.render('predictMatch', {
@@ -175,9 +135,11 @@ function addTeam(teamData, socket) {
     if (err || teams.length == 0) {
       newTeam.save(function (saveErr, newTeam) {
         if (saveErr) {
+          socket.emit("addteam", "error");
           console.log("Error submitting team: " + saveErr);
         } else {
-          console.log("addteam: " + teamData.number);
+          socket.emit("addteam", "success");
+          sendNewTeamNotification(teamData, socket);
         }
       });
     } else {
@@ -188,14 +150,32 @@ function addTeam(teamData, socket) {
       });
       teams[0].save(function (err, updatedTeam) {
         if (err) {
+          socket.emit("addteam", "error");
           console.log("Error submitting team: " + err);
         } else {
-          console.log("addteam: " + teamData.number);
+          socket.emit("addteam", "success");
+          sendNewTeamNotification(teamData, socket);
         }
       });
     }
   });
 
+}
+
+function sendNewTeamNotification(teamData, socket) {
+  io.emit('newteam', teamData);
+}
+
+function sendNewMatchNotification(matchData, socket) {
+  io.emit('newmatch', matchData);
+  var winner = "Tie";
+  if (matchData.scores.red.total > matchData.scores.blue.total)
+    winner = "Red";
+  if (matchData.scores.red.total < matchData.scores.blue.total)
+    winner = "Blue";
+  //discord.newMatch(matchData.number, matchData.field, matchData.scores, winner,
+  //                  matchData.teams.red[0], matchData.teams.red[1],
+  //                  matchData.teams.blue[0], matchData.teams.blue[1]);
 }
 
 function addMatch(matchData, socket) {
@@ -226,9 +206,11 @@ function addMatch(matchData, socket) {
 
   newMatch.save(function (saveErr, newMatch) {
     if (saveErr) {
+      socket.emit("addmatch", "error");
       console.log("Error submitting match: " + saveErr);
     } else {
-      console.log("match added successfully");
+      socket.emit("addmatch", "success");
+      sendNewMatchNotification(matchData, socket);
       doProcessMatchResults();
     }
   });

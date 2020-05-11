@@ -1,5 +1,6 @@
 <div>
-  <form class="col s12" role="form" action="/process?form=home" method="POST">
+  <form class="col s12" onsubmit="sendAddTeam(); return false;">
+
     <div class="row">
       <div class="input-field col s6">
         <input name="team_number" id="team_number" type="number" class="form-control">
@@ -84,4 +85,3 @@
 
   </form>
 </div>
-<script src="/js/home.js"></script>
